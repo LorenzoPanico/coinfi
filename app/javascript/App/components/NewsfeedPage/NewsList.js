@@ -6,13 +6,8 @@ import Tips from './Tips'
 import { easeBackOut, easeBackInOut } from 'd3-ease';
 import NodeGroup from 'react-move/NodeGroup';
 
-const count = 15;
-    function getData() {
-        return count
-    }
-
 class NewsList extends Component {
-  state = { initialRender: true, initialRenderTips:false, width: null, items: getData() }
+  state = { initialRender: true, initialRenderTips:false }
 
   constructor(props) {
     super(props)
@@ -144,7 +139,6 @@ class NewsList extends Component {
   render() {
     const itemHeight = this.state.initialRender ? 'auto' : 0
     const { newsItems, isLoading, activeEntity, activeFilters, sortedNewsItems, initialRenderTips } = this.props
-          const { items, width } = this.state;
 
     const viewState = {
       activeEntity: activeEntity,
@@ -158,7 +152,7 @@ class NewsList extends Component {
           className="flex-auto relative overflow-y-hidden overflow-y-auto-m"
           style={
             !activeEntity && window.isMobile && !activeFilters.size && initialRenderTips
-              ? {marginTop: '-65px', background: '#fff'}
+              ? {marginTop: '-65px', background: '#fff', position:'absolute'}
               : {}
           }>
           {this.renderView(viewState, itemHeight, activeFilters, sortedNewsItems, initialRenderTips, isLoading)}
@@ -203,7 +197,7 @@ class NewsList extends Component {
             ])}
           >
             {(nodes) => (
-              <div style={{ margin: 10, height: count * 20, position: 'relative' }}>
+              <div style={{ margin: 10, position: 'relative' }}>
                 {nodes.map(({ key, state: { x, opacity, backgroundColor } }) => (
                   <div
                     key={key}
