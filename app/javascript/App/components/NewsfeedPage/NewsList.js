@@ -3,9 +3,22 @@ import _ from 'lodash'
 import NewsListItem from './NewsListItem'
 import LoadingIndicator from '../LoadingIndicator'
 import Tips from './Tips'
+import { easeBackOut, easeBackInOut } from 'd3-ease';
+import NodeGroup from 'react-move/NodeGroup';
+
+// import { shuffle, range } from 'd3-array';
+
+const count = 15;
+    function getData() {
+        return count
+    }
 
 class NewsList extends Component {
-  state = { initialRender: true, initialRenderTips:false }
+  state = { initialRender: true, initialRenderTips:false, width: null, items: getData() }
+  //     state = {
+  //   width: null,
+  //   items: getData(),
+  // }
 
   constructor(props) {
     super(props)
@@ -14,6 +27,7 @@ class NewsList extends Component {
     this.onScrollNewsFeedMobile = this.onScrollNewsFeedMobile.bind(this)
     this.onScrollNewsFeedDesktop = this.onScrollNewsFeedDesktop.bind(this)
   }
+
 
   componentDidMount() {
     setTimeout(() => {
@@ -146,11 +160,14 @@ class NewsList extends Component {
   render() {
     const itemHeight = this.state.initialRender ? 'auto' : 0
     const { newsItems, isLoading, activeEntity, activeFilters, sortedNewsItems, initialRenderTips } = this.props
+          const { items, width } = this.state;
+
     const viewState = {
       activeEntity: activeEntity,
       newsItems: newsItems,
       sortedNewsItems: sortedNewsItems
     }
+      console.log('list', viewState.sortedNewsItems)
     return (
       <Fragment>
         <div
@@ -158,10 +175,68 @@ class NewsList extends Component {
           className="flex-auto relative overflow-y-hidden overflow-y-auto-m"
           style={
             !activeEntity && window.isMobile && !activeFilters.size && initialRenderTips
-              ? {marginTop: '-65px', background: '#fff', position:'absolute'}
+              ? {marginTop: '-65px', background: '#fff'}
               : {}
           }>
-          {this.renderView(viewState, itemHeight, activeFilters, sortedNewsItems, initialRenderTips, isLoading)}
+          {/* {this.renderView(viewState, itemHeight, activeFilters, sortedNewsItems, initialRenderTips, isLoading)} */}
+          <NodeGroup
+            data={viewState.sortedNewsItems}
+            keyAccessor={(d) => d.get('updated_at')}
+
+            start={() => ({
+              x: 0,
+              opacity: 0,
+              color: 'black',
+            })}
+
+            enter={() => ([
+              {
+                x: [width * 0.4],
+                color: ['#00cf77'],
+                timing: { delay: 500, duration: 500, ease: easeBackOut },
+              },
+              {
+                opacity: [1],
+                timing: { duration: 500 },
+              },
+            ])}
+
+            update={() => ({
+              x: [width * 0.4], // handle interrupt, if already at value, nothing happens
+              opacity: 1, // make sure opacity set to 1 on interrupt
+              color: '#00a7d8',
+              timing: { duration: 500, ease: easeBackOut },
+            })}
+
+            leave={() => ([
+              {
+                x: [width * 0.8],
+                color: ['#ff0063', 'black'],
+                timing: { duration: 750, ease: easeBackInOut },
+              },
+              {
+                opacity: [0],
+                timing: { delay: 750, duration: 500 },
+              },
+            ])}
+          >
+            {(nodes) => (
+              <div style={{ margin: 10, height: count * 20, position: 'relative' }}>
+                {nodes.map(({ key, state: { x, opacity, color } }) => (
+                  <div
+                    key={key}
+                    style={{
+                      transform: `translate(${x}px, ${key * 20}px)`,
+                      opacity,
+                      color,
+                    }}
+                  >
+                    {key + 1} - {Math.round(x)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </NodeGroup>
           <div>
             {!isLoading('newsItems') &&
               isLoading('newsfeed') && <LoadingIndicator />}
