@@ -135,16 +135,16 @@ class NewsList extends Component {
       )
     }
 
-    const mappedItems = viewState.sortedNewsItems.map((newsItem) => (
-      <NewsListItem
-        key={newsItem.get('id')}
-        newsItem={newsItem}
-        {...this.props}
-        setActiveNewsItem={this.setActiveNewsItem}
-        selectCoin={(symbol) => this.selectCoin(symbol)}
-      />
-    ))
-    return mappedItems
+    // const mappedItems = viewState.sortedNewsItems.map((newsItem) => (
+    //   <NewsListItem
+    //     key={newsItem.get('id')}
+    //     newsItem={newsItem}
+    //     {...this.props}
+    //     setActiveNewsItem={this.setActiveNewsItem}
+    //     selectCoin={(symbol) => this.selectCoin(symbol)}
+    //   />
+    // ))
+    // return mappedItems
   }
 
   selectCoin(coinData) {
@@ -178,10 +178,25 @@ class NewsList extends Component {
               ? {marginTop: '-65px', background: '#fff'}
               : {}
           }>
-          {/* {this.renderView(viewState, itemHeight, activeFilters, sortedNewsItems, initialRenderTips, isLoading)} */}
+          {this.renderView(viewState, itemHeight, activeFilters, sortedNewsItems, initialRenderTips, isLoading)}
+
+
+{/*
+          const mappedItems = viewState.sortedNewsItems.map((newsItem) => (
+          <NewsListItem
+              key={newsItem.get('id')}
+              newsItem={newsItem}
+              {...this.props}
+              setActiveNewsItem={this.setActiveNewsItem}
+              selectCoin={(symbol) => this.selectCoin(symbol)}
+          />
+          ))
+          return mappedItems
+*/}
+
           <NodeGroup
             data={viewState.sortedNewsItems}
-            keyAccessor={(d) => d.get('updated_at')}
+            keyAccessor={(d) => d}
 
             start={() => ({
               x: 0,
@@ -204,7 +219,7 @@ class NewsList extends Component {
             update={() => ({
               x: [width * 0.4], // handle interrupt, if already at value, nothing happens
               opacity: 1, // make sure opacity set to 1 on interrupt
-              color: '#00a7d8',
+              color: '#f00',
               timing: { duration: 500, ease: easeBackOut },
             })}
 
@@ -231,7 +246,13 @@ class NewsList extends Component {
                       color,
                     }}
                   >
-                    {key + 1} - {Math.round(x)}
+                  <NewsListItem
+                      key={key}
+                      newsItem={key}
+                      {...this.props}
+                      setActiveNewsItem={this.setActiveNewsItem}
+                      selectCoin={(symbol) => this.selectCoin(symbol)}
+                  />
                   </div>
                 ))}
               </div>
