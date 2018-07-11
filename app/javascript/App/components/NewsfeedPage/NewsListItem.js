@@ -3,7 +3,7 @@ import timeago from 'timeago.js'
 import NewsCoinTags from './NewsCoinTags'
 
 const NewsListItem = (props) => {
-  const { activeEntity, newsItem, setActiveNewsItem, preRender, selectCoin } = props
+  const { activeEntity, newsItem, setActiveNewsItem, preRender, selectCoin, bgColor } = props
   let className = 'b--b tiber overflow-hidden'
   if (activeEntity) {
     const { type, id } = activeEntity
@@ -13,7 +13,7 @@ const NewsListItem = (props) => {
   const url = new URL(newsItem.get('url'))
   if (preRender) className += ' o-0 absolute'
   return (
-    <div className={className} style={{ height: props.height || 'auto' }}>
+    <div className={className} style={{ height: props.height || 'auto' }, {bgColor}}>
       <div className="pa3">
         <div className="pointer" onClick={
           () => {

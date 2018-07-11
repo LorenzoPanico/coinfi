@@ -6,8 +6,6 @@ import Tips from './Tips'
 import { easeBackOut, easeBackInOut } from 'd3-ease';
 import NodeGroup from 'react-move/NodeGroup';
 
-// import { shuffle, range } from 'd3-array';
-
 const count = 15;
     function getData() {
         return count
@@ -15,10 +13,6 @@ const count = 15;
 
 class NewsList extends Component {
   state = { initialRender: true, initialRenderTips:false, width: null, items: getData() }
-  //     state = {
-  //   width: null,
-  //   items: getData(),
-  // }
 
   constructor(props) {
     super(props)
@@ -135,16 +129,6 @@ class NewsList extends Component {
       )
     }
 
-    // const mappedItems = viewState.sortedNewsItems.map((newsItem) => (
-    //   <NewsListItem
-    //     key={newsItem.get('id')}
-    //     newsItem={newsItem}
-    //     {...this.props}
-    //     setActiveNewsItem={this.setActiveNewsItem}
-    //     selectCoin={(symbol) => this.selectCoin(symbol)}
-    //   />
-    // ))
-    // return mappedItems
   }
 
   selectCoin(coinData) {
@@ -167,7 +151,6 @@ class NewsList extends Component {
       newsItems: newsItems,
       sortedNewsItems: sortedNewsItems
     }
-      console.log('list', viewState.sortedNewsItems)
     return (
       <Fragment>
         <div
@@ -180,70 +163,54 @@ class NewsList extends Component {
           }>
           {this.renderView(viewState, itemHeight, activeFilters, sortedNewsItems, initialRenderTips, isLoading)}
 
-
-{/*
-          const mappedItems = viewState.sortedNewsItems.map((newsItem) => (
-          <NewsListItem
-              key={newsItem.get('id')}
-              newsItem={newsItem}
-              {...this.props}
-              setActiveNewsItem={this.setActiveNewsItem}
-              selectCoin={(symbol) => this.selectCoin(symbol)}
-          />
-          ))
-          return mappedItems
-*/}
-
           <NodeGroup
             data={viewState.sortedNewsItems}
             keyAccessor={(d) => d}
 
             start={() => ({
-              x: 0,
               opacity: 0,
-              color: 'black',
+              backgroundColor: '#fff'
             })}
 
-            enter={() => ([
-              {
-                x: [width * 0.4],
-                color: ['#00cf77'],
-                timing: { delay: 500, duration: 500, ease: easeBackOut },
-              },
-              {
-                opacity: [1],
-                timing: { duration: 500 },
-              },
-            ])}
+            enter={() => {
+              return ([
+                {
+                  timing: { delay: 500, duration: 500, ease: easeBackOut },
+                },
+                {
+                  opacity: [1],
+                  timing: { duration: 500 },
+                  backgroundColor: ['#fff', '#eff9fe']
+                },
+              ])
+            }
+            }
 
             update={() => ({
-              x: [width * 0.4], // handle interrupt, if already at value, nothing happens
-              opacity: 1, // make sure opacity set to 1 on interrupt
-              color: '#f00',
-              timing: { duration: 500, ease: easeBackOut },
+                  timing: { duration: 500 },
+                  backgroundColor: ['#eff9fe', '#fff']
             })}
 
             leave={() => ([
               {
-                x: [width * 0.8],
-                color: ['#ff0063', 'black'],
-                timing: { duration: 750, ease: easeBackInOut },
+                  timing: { duration: 500 },
+                  backgroundColor: ['#eff9fe', '#fff']
               },
               {
-                opacity: [0],
-                timing: { delay: 750, duration: 500 },
+                  timing: { duration: 500 },
+                  backgroundColor: ['#eff9fe', '#fff']
               },
             ])}
           >
             {(nodes) => (
               <div style={{ margin: 10, height: count * 20, position: 'relative' }}>
-                {nodes.map(({ key, state: { x, opacity, color } }) => (
+                {nodes.map(({ key, state: { x, opacity, backgroundColor } }) => (
                   <div
                     key={key}
                     style={{
                       transform: `translate(${x}px, ${key * 20}px)`,
                       opacity,
-                      color,
+                      backgroundColor
                     }}
                   >
                   <NewsListItem
@@ -252,6 +219,7 @@ class NewsList extends Component {
                       {...this.props}
                       setActiveNewsItem={this.setActiveNewsItem}
                       selectCoin={(symbol) => this.selectCoin(symbol)}
+                      bgColor={backgroundColor}
                   />
                   </div>
                 ))}
