@@ -21,7 +21,7 @@ class NewsList extends Component {
       this.setState({ initialRender: false })
     }, 60000)
     this.mountOnScrollHandler()
-    console.log(this.requestRedditImg())
+    this.requestRedditImg()
   }
 
   componentDidUpdate() {
