@@ -11,12 +11,13 @@ class Coin < ApplicationRecord
   has_paper_trail
 
   has_many :articles
-  has_many :influencer_reviews
   has_many :coin_excluded_countries
-  has_many :excluded_countries, through: :coin_excluded_countries, source: :country
   has_many :coin_industries_coins
   has_many :coin_industries, through: :coin_industries_coins
+  has_many :exchange_listings, foreign_key: 'quote_symbol_id'
+  has_many :excluded_countries, through: :coin_excluded_countries, source: :country
   has_many :feed_sources
+  has_many :influencer_reviews
   has_many :mentions, class_name: 'NewsCoinMention'
   has_many :news_items, through: :mentions
 
@@ -58,9 +59,9 @@ class Coin < ApplicationRecord
   def price_by_currency(currency)
     price.try(:[], currency)
   end
-  
+
   def prices_data
-    # TODO: expires_in should probably be at midnight 
+    # TODO: expires_in should probably be at midnight
     Rails.cache.fetch("#{symbol}_prices_data", expires_in: 1.day) do
       url = "#{ENV.fetch('COINFI_PRICES_URL')}api/v1/coins/#{symbol}/daily_history.json"
       response = HTTParty.get(url)
@@ -83,9 +84,22 @@ class Coin < ApplicationRecord
     }
   end
 
+  def listings_data
+    i = exchange_listings.length + 1
+    exchange_listings.order_by_detected.map do |listing|
+      i -= 1
+      {
+        x: listing.detected_at,
+        title: i,
+        text: listing.headline,
+        url: listing.exchange.www_url
+      }
+    end
+  end
+
   def is_being_watched
     # Only use this for serialization
     current_user && current_user.coins.include?(self)
   end
-  
+
 end
